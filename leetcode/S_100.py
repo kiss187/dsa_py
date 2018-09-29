@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from leetcode import perf_time
 
 class S100:
   def s1_two_sum(self, nums, target):
@@ -29,6 +30,7 @@ class S100:
         tmp[need] = idx
     raise ValueError('cannot find solution!')
 
+  # @perf_time
   def s4_find_median_sorted_arrays(self, nums1, nums2):
     """
     There are two sorted arrays nums1 and nums2 of size m and n respectively.
@@ -40,8 +42,53 @@ class S100:
     :param nums2:
     :return:
     """
-    # todo
-    pass
+    m = len(nums1)
+    n = len(nums2)
+    s = m + n
+    if m > n:
+      nums1, nums2, m, n = nums2, nums1, n, m
+
+    i_min, i_max = 0, m
+
+    while True:
+      # i's domain is [0, m], m could be zero
+      # i means the num of elements,
+      # which locate the left of final median but belong to nums1
+      # j as like i is
+      # what ever s is even or odd,
+      # s // 2 is the num of total elements locate the left side of final median
+      i = (i_min + i_max) // 2
+      j = s // 2 - i
+
+      if i > 0 and nums1[i-1] > nums2[j]:
+        # if m <= n, i > 0
+        # then j = (m+n)//2 - i < (m+n)//2 <= (n + n)//2 == n
+        # so j < n
+        i_max = i - 1
+      elif i < m and nums2[j-1] > nums1[i]:
+        # if m <= n, i < m then
+        # j = (m+n)//2 - i > (m+n)//2 - m >= (m + m)//2 - m >= 0
+        # so j > 0
+        i_min = i + 1
+      else:
+        if i == m:
+          min_right = nums2[j]
+        elif j == n:
+          min_right = nums1[i]
+        else:
+          min_right = min(nums1[i], nums2[j])
+
+        if s % 2 == 1:
+          return min_right / 1.0
+
+        if i == 0:
+          max_left = nums2[j-1]
+        elif j == 0:
+          max_left = nums1[i-1]
+        else:
+          max_left = max(nums1[i-1], nums2[j-1])
+
+        return (max_left + min_right) / 2.0
 
   def s20_is_valid(self, s):
     """
@@ -101,5 +148,9 @@ class S100:
 
 if __name__ == '__main__':
   solution = S100()
-  res = solution.s27_remove_element([0, 1, 2, 2, 3, 0, 4, 2], 2)
+  res = solution.s4_find_median_sorted_arrays(
+    [1, 2],
+    [3, 4]
+  )
   print(res)
+
