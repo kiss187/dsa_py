@@ -18,11 +18,12 @@ class SomeClass(object):
     pass
 
 
-obj = SomeClass()
-for name, func in getmembers(obj, predicate=ismethod):
-  print('Member Name: {}'.format(name))
-  print('Func Name: {}'.format(func.__name__))
-  print('Args: {}'.format(getfullargspec(func)))
+if __name__ == '__main__':
+  obj = SomeClass()
+  for name, func in getmembers(obj, predicate=ismethod):
+    print('Member Name: {}'.format(name))
+    print('Func Name: {}'.format(func.__name__))
+    print('Args: {}'.format(getfullargspec(func)))
 
 # Member Name: method
 # Func Name: method

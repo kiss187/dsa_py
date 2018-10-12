@@ -6,12 +6,11 @@ from functools import wraps
 
 
 def perf_time(f):
-
   @wraps(f)
-  def wrapper(*args, **kwargs):
+  def wrapped(*args, **kwargs):
     start = time.time()
     res = f(*args, **kwargs)
     print('--{} cost {} seconds!--'.format(f.__name__, time.time() - start))
     return res
 
-  return wrapper()
+  return wrapped
