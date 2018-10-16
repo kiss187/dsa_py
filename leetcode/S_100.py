@@ -128,9 +128,8 @@ class S100:
     return max_area
 
   @perf_time
-  def s15_three_sum(self, nums):
+  def s15_three_sum_i(self, nums):
     """
-
     :type nums: List[int]
     :rtype: List[List[int]]
     """
@@ -147,6 +146,93 @@ class S100:
           d[-v - x] = 1
         else:
           result.add((v, -v - x, x))
+    return list(map(list, result))
+
+  @perf_time
+  def s15_three_sum_ii(self, nums):
+    """
+    :type nums: List[int]
+    :rtype: List[List[int]]
+    """
+    if len(nums) < 3:
+      return []
+    nums.sort()
+    result = set()
+    for i, v in enumerate(nums[:-2]):
+      if i >= 1 and v == nums[i - 1]:
+        continue
+      # 类杨氏矩阵线性搜索
+      m = i + 1
+      n = len(nums) - 1
+      while m < n:
+        two_sum = nums[m] + nums[n]
+        if two_sum == -v:
+          result.add((v, nums[m], nums[n]))
+          while m + 1 < n and nums[m] == nums[m + 1]:
+            m += 1
+          while n - 1 > m and nums[n] == nums[n - 1]:
+            n -= 1
+          m += 1
+          n -= 1
+        elif two_sum > -v:
+          n -= 1
+        elif two_sum < -v:
+          m += 1
+    return list(map(list, result))
+
+  @perf_time
+  def s16_three_sum_closest(self, nums, target):
+    tmp_three_sum = sum(nums[:3])
+    if len(nums) <= 3:
+      return tmp_three_sum
+    nums.sort()
+    for i, v in enumerate(nums[:-2]):
+      if i >= 1 and v == nums[i - 1]:
+        continue
+      # 类杨氏矩阵线性搜索
+      m = i + 1
+      n = len(nums) - 1
+      while m < n:
+        three_sum = nums[m] + nums[n] + v
+        if three_sum == target:
+          return target
+        elif three_sum > target:
+          n -= 1
+        elif three_sum < target:
+          m += 1
+        if abs(three_sum - target) < abs(tmp_three_sum - target):
+          tmp_three_sum = three_sum
+    return tmp_three_sum
+
+  @perf_time
+  def s18_four_sum(self, nums, target):
+    if len(nums) < 4:
+      return []
+    nums.sort()
+    result = set()
+    for i in range(len(nums) - 3):
+      if i >= 1 and nums[i] == nums[i - 1]:
+        continue
+      for j in range(i + 1, len(nums) - 2):
+        if j >= i + 2 and nums[j] == nums[j - 1]:
+          continue
+        m = j + 1
+        n = len(nums) - 1
+        while m < n:
+          four_sum = nums[i] + nums[j] + nums[m] + nums[n]
+          if four_sum == target:
+            result.add((nums[i], nums[j], nums[m], nums[n]))
+            while m + 1 < n and nums[m] == nums[m + 1]:
+              m += 1
+            while n - 1 > m and nums[n] == nums[n - 1]:
+              n -= 1
+            m += 1
+            n -= 1
+          elif four_sum > target:
+            n -= 1
+          elif four_sum < target:
+            m += 1
+
     return list(map(list, result))
 
   def s20_is_valid(self, s):
@@ -204,10 +290,46 @@ class S100:
         pos += 1
     return pos
 
+  @perf_time
+  def s31_next_permutation(self, nums):
+    def reverse(num_list, start, end):
+      size = len(num_list)
+      while (start % size) < (end % size):
+        num_list[start], num_list[end] = num_list[end], num_list[start]
+        start += 1
+        end -= 1
+
+    if len(nums) < 2:
+      return
+
+    # from right to left,
+    # find first element is lower than its right element
+    i = len(nums) - 2
+    while i >= 0 and nums[i] >= nums[i + 1]:
+      i = i - 1
+
+    if i < 0:
+      nums.sort()
+      return
+
+    # from right to left,
+    # find first element is greater than nums[i]
+    j = len(nums) - 1
+    while nums[j] <= nums[i]:
+      j = j - 1
+
+    nums[i], nums[j] = nums[j], nums[i]
+    # sorted will be faster
+    # nums[i + 1:] = sorted(nums[i + 1:])
+    reverse(nums, i+1, -1)
+
 
 if __name__ == '__main__':
   solution = S100()
-  res = solution.s15_three_sum(
-    [-1, 0, 1, 2, -1, -4]
+  nums = [1,3,2]
+  res = solution.s31_next_permutation(
+    nums
   )
+  print(id(nums))
+  print(nums)
   print(res)
