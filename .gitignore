@@ -99,7 +99,7 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# Unit pg_test / coverage reports
 htmlcov/
 .tox/
 .coverage
@@ -177,3 +177,5 @@ venv.bak/
 [Ss]cripts
 pyvenv.cfg
 pip-selfcheck.json
+
+pg_test/

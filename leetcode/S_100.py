@@ -323,13 +323,29 @@ class S100:
     # nums[i + 1:] = sorted(nums[i + 1:])
     reverse(nums, i+1, -1)
 
+  @perf_time
+  def s33_search(self, nums, target):
+    if not nums:
+      return -1
+    lo = 0
+    hi = len(nums) - 1
 
-if __name__ == '__main__':
-  solution = S100()
-  nums = [1,3,2]
-  res = solution.s31_next_permutation(
-    nums
-  )
-  print(id(nums))
-  print(nums)
-  print(res)
+    while lo <= hi:
+      mid = (lo + hi) // 2
+      if nums[mid] == target:
+        return mid
+      if nums[lo] <= nums[mid]:
+        # lo -- mid asc
+        # mid -- hi, asc, desc, asc
+        if nums[lo] <= target <= nums[mid]:
+          hi = mid - 1
+        else:
+          lo = mid + 1
+      else:
+        # mid -- hi, ascend
+        # lo -- mid, asc, desc, asc
+        if nums[mid] <= target <= nums[hi]:
+          lo = mid + 1
+        else:
+          hi = mid - 1
+    return -1
