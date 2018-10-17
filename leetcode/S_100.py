@@ -321,7 +321,7 @@ class S100:
     nums[i], nums[j] = nums[j], nums[i]
     # sorted will be faster
     # nums[i + 1:] = sorted(nums[i + 1:])
-    reverse(nums, i+1, -1)
+    reverse(nums, i + 1, -1)
 
   @perf_time
   def s33_search(self, nums, target):
@@ -349,3 +349,30 @@ class S100:
         else:
           hi = mid - 1
     return -1
+
+  @perf_time
+  def s34_search_range(self, nums, target):
+    if not nums:
+      return [-1, -1]
+    lo = 0
+    hi = len(nums) - 1
+    while lo < hi:
+      left = (lo + hi) // 2
+      if nums[left] < target:
+        lo = left + 1
+      else:
+        hi = left
+    if nums[lo] != target:
+      return [-1, -1]
+    left = lo
+
+    hi = len(nums) - 1
+    while lo < hi:
+      right = (lo + hi) // 2 + 1
+      if nums[right] > target:
+        hi = right - 1
+      else:
+        lo = right
+    return [left, hi]
+
+
