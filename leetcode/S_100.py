@@ -235,6 +235,7 @@ class S100:
 
     return list(map(list, result))
 
+  @perf_time
   def s20_is_valid(self, s):
     """
     Given a string containing just the characters
@@ -272,6 +273,7 @@ class S100:
     else:
       return True
 
+  @perf_time
   def s26_remove_duplicates(self, nums):
     if not nums:
       return 0
@@ -282,6 +284,7 @@ class S100:
         nums[pos] = nums[idx]
     return pos + 1
 
+  @perf_time
   def s27_remove_element(self, nums, val):
     pos = 0
     for n in nums:
@@ -289,6 +292,32 @@ class S100:
         nums[pos] = n
         pos += 1
     return pos
+
+  @perf_time
+  def s29_divide(self, dividend, divisor):
+    if dividend == -2147483648 and divisor == -1:
+      # overflow case
+      return 2147483647
+
+    is_negative = (dividend < 0) ^ (divisor < 0)
+    dividend_abs = abs(dividend)
+    divisor_abs = abs(divisor)
+    if not dividend_abs or dividend_abs < divisor_abs:
+      return 0
+
+    res = 0
+    while dividend_abs >= divisor_abs:
+      curr_divisor = divisor_abs
+      multiplier = 1
+      while dividend_abs >= curr_divisor << 1:
+        curr_divisor <<= 1
+        multiplier <<= 1
+      res += multiplier
+      dividend_abs -= curr_divisor
+
+    if is_negative:
+      res = ~res + 1
+    return res
 
   @perf_time
   def s31_next_permutation(self, nums):
