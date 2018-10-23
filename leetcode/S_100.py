@@ -325,54 +325,82 @@ class S100:
 
   @perf_time
   def s33_search(self, nums, target):
-    if not nums:
-      return -1
-    lo = 0
-    hi = len(nums) - 1
+    """
+    :tags: Binary Search
+    :param nums:
+    :param target:
+    :return:
+    """
+    lo = -1
+    hi = len(nums)
 
-    while lo <= hi:
-      mid = (lo + hi) // 2
+    while lo + 1 != hi:
+      mid = lo + (hi - lo) // 2
       if nums[mid] == target:
         return mid
-      if nums[lo] <= nums[mid]:
+      if nums[lo + 1] <= nums[mid]:
         # lo -- mid asc
         # mid -- hi, asc, desc, asc
-        if nums[lo] <= target <= nums[mid]:
-          hi = mid - 1
+        if nums[lo + 1] <= target <= nums[mid]:
+          hi = mid
         else:
-          lo = mid + 1
+          lo = mid
       else:
         # mid -- hi, ascend
         # lo -- mid, asc, desc, asc
-        if nums[mid] <= target <= nums[hi]:
-          lo = mid + 1
+        if nums[mid] <= target <= nums[hi - 1]:
+          lo = mid
         else:
-          hi = mid - 1
+          hi = mid
     return -1
 
   @perf_time
   def s34_search_range(self, nums, target):
-    if not nums:
-      return [-1, -1]
-    lo = 0
-    hi = len(nums) - 1
-    while lo < hi:
-      left = (lo + hi) // 2
-      if nums[left] < target:
-        lo = left + 1
+    """
+    :tags: Binary Search
+    :param nums:
+    :param target:
+    :return:
+    """
+    lo = -1
+    hi = len(nums)
+    while lo + 1 != hi:
+      mid = lo + (hi - lo) // 2
+      if nums[mid] < target:
+        lo = mid
       else:
-        hi = left
-    if nums[lo] != target:
+        hi = mid
+
+    if hi == len(nums) or nums[hi] != target:
       return [-1, -1]
-    left = lo
+    left = hi
 
-    hi = len(nums) - 1
-    while lo < hi:
-      right = (lo + hi) // 2 + 1
-      if nums[right] > target:
-        hi = right - 1
+    lo = hi - 1
+    hi = len(nums)
+    while lo + 1 != hi:
+      mid = lo + (hi - lo) // 2
+      if nums[mid] <= target:
+        lo = mid
       else:
-        lo = right
-    return [left, hi]
+        hi = mid
 
+    return [left, lo]
 
+  @perf_time
+  def s35_search_insert(self, nums, target):
+    """
+    :tags: Binary Search
+    :param nums:
+    :param target:
+    :return:
+    """
+    lo = -1
+    hi = len(nums)
+
+    while lo + 1 != hi:
+      mid = lo + (hi - lo) // 2
+      if nums[mid] < target:
+        lo = mid
+      else:
+        hi = mid
+    return hi
