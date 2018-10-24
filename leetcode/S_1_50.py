@@ -4,7 +4,8 @@
 from leetcode import perf_time
 
 
-class S100:
+class Solution:
+  @perf_time
   def s1_two_sum(self, nums, target):
     """
     Given an array of integers, return indices of the two numbers
@@ -95,6 +96,36 @@ class S100:
         return (max_left + min_right) / 2.0
 
   @perf_time
+  def s7_reverse(self, x):
+    # using str library
+    # res = sign * int(str(sign * x)[::-1])
+    # return res if -2147483648 <= res <= 2147483647 else 0
+    sign = -1 if x < 0 else 1
+    res = 0
+    x_abs = abs(x)
+    while x_abs != 0:
+      res = res * 10 + (x_abs % 10) * sign
+      x_abs = x_abs // 10
+
+    return res if -2147483648 <= res <= 2147483647 else 0
+
+  @perf_time
+  def s9_is_palindrome(self, x):
+    if x < 0:
+      return False
+
+    res = 0
+    x_abs = abs(x)
+    while x_abs != 0:
+      res = res * 10 + (x_abs % 10)
+      x_abs = x_abs // 10
+
+    if x == res:
+      return True
+    else:
+      return False
+
+  @perf_time
   def s11_max_area(self, height):
     """
     greed and pruning
@@ -126,6 +157,63 @@ class S100:
         left = left + 1
 
     return max_area
+
+  @perf_time
+  def s13_roman_to_int(self, s):
+    r_to_i = {
+      'I': 1,
+      'V': 5,
+      'X': 10,
+      'L': 50,
+      'C': 100,
+      'D': 500,
+      'M': 1000
+    }
+    res = 0
+    last_base = 0
+    idx = len(s) - 1
+    while idx >= 0:
+      if r_to_i[s[idx]] >= last_base:
+        res += r_to_i[s[idx]]
+        last_base = r_to_i[s[idx]]
+        idx -= 1
+      else:
+        anchor = s[idx]
+        while idx >= 0 and s[idx] == anchor:
+          res -= r_to_i[anchor]
+          idx -= 1
+        last_base = r_to_i[anchor]
+    return res
+
+  @perf_time
+  def s14_longest_common_prefix(self, strs):
+
+    if not strs:
+      return ''
+    # simple method
+    # common_prefix = strs[0]
+    # for s in strs[1:]:
+    #   prefix = ''
+    #   i = 0
+    #   while i < len(s) and i < len(common_prefix) and s[i] == common_prefix[i]:
+    #     prefix += common_prefix[i]
+    #     i += 1
+    #   if prefix:
+    #     common_prefix = prefix
+    #   else:
+    #     return ''
+    # return common_prefix
+
+    # using sort
+    strs.sort()
+    common_prefix = list()
+    i = 0
+    while i < len(strs[0]) \
+        and i < len(strs[-1]) \
+        and strs[0][i] == strs[-1][i]:
+      common_prefix.append(strs[0][i])
+      i += 1
+    return ''.join(common_prefix)
 
   @perf_time
   def s15_three_sum_i(self, nums):
@@ -274,6 +362,40 @@ class S100:
       return True
 
   @perf_time
+  def s21_merge_two_lists(self, l1, l2):
+    # Definition for singly-linked list.
+    # class ListNode:
+    #     def __init__(self, x):
+    #         self.val = x
+    #         self.next = None
+    if None in (l1, l2):
+      return l1 or l2
+
+    if l1.val <= l2.val:
+      head = tail = l1
+      l1 = l1.next
+    else:
+      head = tail = l2
+      l2 = l2.next
+
+    while l1:
+      if l2 and l2.val <= l1.val:
+        tail.next = l2
+        tail = l2
+        l2 = l2.next
+      else:
+        tail.next = l1
+        tail = l1
+        l1 = l1.next
+
+    if l2:
+      tail.next = l2
+    else:
+      tail.next = None
+
+    return head
+
+  @perf_time
   def s26_remove_duplicates(self, nums):
     if not nums:
       return 0
@@ -292,6 +414,25 @@ class S100:
         nums[pos] = n
         pos += 1
     return pos
+
+  @perf_time
+  def s28_strstr(self, haystack, needle):
+    """
+    :tags: KMP String Match
+    :type haystack: str
+    :type needle: str
+    :rtype: int
+    """
+    #todo kmp solution
+    if not needle:
+      return 0
+    length = len(needle)
+    if length > len(haystack):
+      return -1
+    for i, s in enumerate(haystack):
+      if s == needle[0] and haystack[i:i + length] == needle:
+        return i
+    return -1
 
   @perf_time
   def s29_divide(self, dividend, divisor):
