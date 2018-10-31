@@ -429,14 +429,14 @@ def s27_remove_element(nums, val):
 
 
 @perf_time
-def s28_strstr(haystack, needle):
+def s28_strstr_i(haystack, needle):
   """
-  :tags: KMP String Match
+  substring matching
+  brute force solution
   :type haystack: str
   :type needle: str
   :rtype: int
   """
-  # todo kmp solution
   if not needle:
     return 0
   length = len(needle)
@@ -446,6 +446,57 @@ def s28_strstr(haystack, needle):
     if s == needle[0] and haystack[i:i + length] == needle:
       return i
   return -1
+
+
+@perf_time
+def s28_strstr_ii(haystack, needle):
+  """
+  Knuth–Morris–Pratt algorithm solution
+  partial matching table implementation
+  :type haystack: str
+  :type needle: str
+  :rtype: int
+  """
+  def gen_pmt(pattern):
+    """
+    generate the partial matching table
+    pmt[j] = k could be defined as
+    means pattern[0:k] is the longest prefix
+    which is also proper suffix for substring pattern[0:j]
+    :param pattern: cannot be None or Empty string
+    :return: list
+    """
+    pmt = list()
+    k = -1
+    j = 0
+    pmt.append(k)
+    while j < len(pattern) - 1:
+      if k == -1 or pattern[j] == pattern[k]:
+        j += 1
+        k += 1
+        pmt.append(k)
+      else:
+        k = pmt[k]
+    return pmt
+
+  if not needle:
+    return 0
+  if len(needle) > len(haystack):
+    return -1
+
+  i = 0
+  j = 0
+  pmt = gen_pmt(needle)
+  while i < len(haystack) and j < len(needle):
+    if j == -1 or haystack[i] == needle[j]:
+      i += 1
+      j += 1
+    else:
+      j = pmt[j]
+  if j == len(needle):
+    return i - j
+  else:
+    return -1
 
 
 @perf_time
