@@ -58,7 +58,23 @@ def kmp_dfa(s, p):
   :type p: str
   :rtype: int
   """
-  pass
+
+  def gen_dfa(pattern):
+    alphabet = set(pattern)
+    dfa = dict()
+    i = 0
+    state_bk = 0
+    while i < len(pattern):
+      for c in alphabet:
+        state_table = dfa.setdefault(c, [0] * len(pattern))
+        state_table[i] = state_table[state_bk]
+      state_bk = dfa[pattern[i]][state_bk]
+      dfa[pattern[i]][i] = i + 1
+      i += 1
+
+    return dfa
+
+  print(gen_dfa(p))
 
 
 def bm(s, p):
@@ -84,7 +100,7 @@ def sunday(s, p):
 if __name__ == '__main__':
   # [-1, 0, 0, 0, 1, 2, 0]
   print(
-    kmp_pmt(
-      '123123123123123', 'ABCDABD'
+      kmp_dfa(
+      '123123123123123', 'ABABAC'
     )
   )
