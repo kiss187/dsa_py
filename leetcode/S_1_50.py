@@ -463,6 +463,7 @@ def s28_strstr_ii(haystack, needle):
     pmt[j] = k could be defined as
     means pattern[0:k] is the longest prefix
     which is also proper suffix for substring pattern[0:j]
+    prefix != pattern[0:j]
     :param pattern: cannot be None or Empty string
     :return: list
     """
@@ -474,7 +475,14 @@ def s28_strstr_ii(haystack, needle):
       if k == -1 or pattern[j] == pattern[k]:
         j += 1
         k += 1
-        pmt.append(k)
+        # simple update
+        # pmt.append(k)
+
+        # refine update
+        if pattern[j] != pattern[k]:
+          pmt.append(k)
+        else:
+          pmt.append(pmt[k])
       else:
         k = pmt[k]
     return pmt
@@ -495,6 +503,54 @@ def s28_strstr_ii(haystack, needle):
       j = pmt[j]
   if j == len(needle):
     return i - j
+  else:
+    return -1
+
+
+@perf_time
+def s28_strstr_iii(haystack, needle):
+  """
+  Knuth–Morris–Pratt algorithm solution
+  deterministic finite automata implementation
+  :type haystack: str
+  :type needle: str
+  :rtype: int
+  """
+
+  def gen_dfa(pattern):
+    R = 256
+    dfa = [[0]*len(pattern) for _ in range(R)]
+    i = 0
+    # s[0], s[1], ..., s[i-1], s[i]
+    # 1. if s[i] match p[i], dfa[s[i]][i] = i + 1
+    # 2. if s[i] mismatch p[i],
+    # next state equals the state of dfa has matched substring s[1],...,s[i]
+    state_bk = 0
+    while i < len(pattern):
+      m = ord(pattern[i])
+      for c in range(R):
+        dfa[c][i] = dfa[c][state_bk]
+      state_bk = dfa[m][state_bk]
+      dfa[m][i] = i + 1
+      i += 1
+
+    return dfa
+
+  if not needle:
+    return 0
+  if len(needle) > len(haystack):
+    return -1
+
+  dfa = gen_dfa(needle)
+
+  i = 0
+  state = 0
+  while i < len(haystack) and state < len(needle):
+    state = dfa[ord(haystack[i])][state]
+    i += 1
+
+  if state == len(needle):
+    return i - state
   else:
     return -1
 

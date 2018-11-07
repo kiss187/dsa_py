@@ -16,6 +16,7 @@ def kmp_pmt(s, p):
     pmt[j] = k could be defined as
     means pattern[0:k] is the longest prefix
     which is also proper suffix for substring pattern[0:j]
+    prefix != pattern[0:j]
     :param pattern: cannot be None or Empty string
     :return: list
     """
@@ -27,7 +28,14 @@ def kmp_pmt(s, p):
       if k == -1 or pattern[j] == pattern[k]:
         j += 1
         k += 1
-        pmt.append(k)
+        # simple update
+        # pmt.append(k)
+
+        # refine update
+        if pattern[j] != pattern[k]:
+          pmt.append(k)
+        else:
+          pmt.append(pmt[k])
       else:
         k = pmt[k]
     return pmt
@@ -60,21 +68,39 @@ def kmp_dfa(s, p):
   """
 
   def gen_dfa(pattern):
-    alphabet = set(pattern)
-    dfa = dict()
+    R = 256
+    dfa = [[0]*len(pattern) for _ in range(R)]
     i = 0
+    # s[0], s[1], ..., s[i-1], s[i]
+    # 1. if s[i] match p[i], dfa[s[i]][i] = i + 1
+    # 2. if s[i] mismatch p[i],
+    # next state equals the state of dfa has matched substring s[1],...,s[i]
     state_bk = 0
     while i < len(pattern):
-      for c in alphabet:
-        state_table = dfa.setdefault(c, [0] * len(pattern))
-        state_table[i] = state_table[state_bk]
-      state_bk = dfa[pattern[i]][state_bk]
-      dfa[pattern[i]][i] = i + 1
+      m = ord(pattern[i])
+      for c in range(R):
+        dfa[c][i] = dfa[c][state_bk]
+      state_bk = dfa[m][state_bk]
+      dfa[m][i] = i + 1
       i += 1
 
     return dfa
 
-  print(gen_dfa(p))
+  if not p or len(p) > len(s):
+    return -1
+
+  dfa = gen_dfa(p)
+
+  i = 0
+  state = 0
+  while i < len(s) and state < len(p):
+    state = dfa[ord(s[i])][state]
+    i += 1
+
+  if state == len(p):
+    return i - state
+  else:
+    return -1
 
 
 def bm(s, p):
@@ -96,11 +122,3 @@ def sunday(s, p):
   """
   pass
 
-
-if __name__ == '__main__':
-  # [-1, 0, 0, 0, 1, 2, 0]
-  print(
-      kmp_dfa(
-      '123123123123123', 'ABABAC'
-    )
-  )
